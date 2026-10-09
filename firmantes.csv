@@ -1,0 +1,32 @@
+# ============================================================================
+#  ROSTER DE FIRMANTES  —  Auditoria de Ediciones   (claves RSA)
+# ----------------------------------------------------------------------------
+#  SUBIR este archivo a tu repo PUBLICO (Iadriazola/Firmantes-Autorizados).
+#  El server/bot lo leen por raw URL, sin credenciales. Aqui solo van claves
+#  PUBLICAS (no hay secretos). Las PRIVADAS se quedan con cada firmante
+#  (su carpeta Claves\<ts>_<nombre>\private_key.pem, cifrada con su passphrase).
+#
+#  Lo que protege el roster: que SOLO TU mergees cambios (nadie inyecta una
+#  clave), el historial de git, y que viva fuera del server.
+#
+#  FORMATO (CSV). Lineas con # se ignoran. UNA linea por firmante (sin cortar).
+#    usuario,clave_publica,activa,fecha_inicio,fecha_fin
+#      usuario       nombre del firmante (ej. iadriazola)
+#      clave_publica base64 del SPKI de la public_key.pem, EN UNA SOLA LINEA
+#                    (el cuerpo del PEM, sin -----BEGIN/END----- y sin saltos)
+#      activa        1 = puede firmar ; 0 = revocada
+#      fecha_inicio  YYYY-MM-DD
+#      fecha_fin     YYYY-MM-DD (vacio si sigue activa)
+#
+#  REGLAS:
+#    - Una firma vale si su clave estaba ACTIVA al firmar.
+#    - REVOCAR: no borres la fila -> activa=0 + fecha_fin.
+#    - ROTAR: revoca la vieja y agrega fila nueva.
+#
+#  COMO OBTENER clave_publica (desde la carpeta Claves del firmante):
+#    PowerShell: (Get-Content public_key.pem) -notmatch 'BEGIN|END' -join ''
+#    Bash:       grep -v 'BEGIN\|END' public_key.pem | tr -d '\n\r '
+# ============================================================================
+
+usuario,clave_publica,activa,fecha_inicio,fecha_fin
+iadriazola,MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAp8tnTCbKp3/9qRsy9f3SCIJphuqbN1/55defDmefMfNsoSodDB76CkTo0Z1ZudkyzDE7h7hlZw9GEqJo4bI6LQUeSESGxYGT8jmmxtUGWrXnwhK5CQAHHV1vV/4GxO9DSvWjFhIN6xH2ShO2KDPlrug9YJCQOhfTquSGDKqN/nhXPhQ0nMr/Dn/PjOqTCXFx+ltvyWPmMPBP0Kd1KHQbODkvHAZrkgsm9czQkYkW4VBtaucWnfns2FfC20M+Rq8bMY+Us8MWaXI5FyIj0ZiS09J7ovArBIwjyD3fwnJMeWqVBi/EYjcf7qWGT0HlEXzfOzekoFsSzt0SxyU20yX1ErCt44TOV8IbvC2E4pOwyulsXZEPh7G6Qr0YtJkb5u5xKbpLQzIhXRE6fUV4ukmFS74a9VTEPZdASYjetQQ+y1ZWTuKT7fu0VbDClFitN28OKieE51HrTLk25T9fZQFwAaU5Z6+UmMeAoJEv7oagA6WUn27kWVBaSQr7oD8jlyx5AgMBAAE=,1,2026-10-09,
