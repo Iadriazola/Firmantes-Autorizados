@@ -1,0 +1,52 @@
+# ============================================================================
+#  ROSTER DE FIRMANTES  —  Auditoria de Ediciones
+# ----------------------------------------------------------------------------
+#  SUBIR este archivo a un REPO PUBLICO tuyo. El server lo lee por curl (raw URL),
+#  sin credenciales. No hay secretos aqui: son solo claves PUBLICAS.
+#
+#  LO QUE PROTEGE EL ROSTER no es que sea privado, sino:
+#    - que SOLO TU puedas escribir/mergear cambios al repo (nadie inyecta una clave),
+#    - que el historial de git deje ver quien cambio que y cuando,
+#    - que viva FUERA del server (el admin no reescribe el repo sin tus credenciales).
+#
+#  FORMATO (CSV). Las lineas que empiezan con # se ignoran.
+#    usuario,clave_publica,activa,fecha_inicio,fecha_fin
+#      usuario       nombre/identificador del firmante (ej. iadriazola)
+#      clave_publica clave publica ECDSA P-256, base64 del SPKI (ver COMO GENERAR)
+#      activa        1 = puede firmar ; 0 = revocada
+#      fecha_inicio  desde cuando vale la clave (YYYY-MM-DD)
+#      fecha_fin     cuando se revoco (YYYY-MM-DD) ; vacio si sigue activa
+#
+#  REGLAS:
+#    - Una firma es valida si su clave estaba ACTIVA al momento de firmar.
+#    - Para REVOCAR: no borres la fila -> pon activa=0 y fecha_fin. (Asi las firmas
+#      viejas hechas cuando estaba activa siguen validando para ese periodo.)
+#    - Para ROTAR clave: revoca la vieja (activa=0 + fecha_fin) y agrega una fila nueva.
+#
+#  ===== COMO GENERA CADA FIRMANTE SU PAR DE LLAVES =====
+#  En el navegador (F12 -> Consola), pegar:
+#
+#    (async () => {
+#      const kp  = await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'}, true, ['sign','verify']);
+#      const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+#      const pub = b64(await crypto.subtle.exportKey('spki',  kp.publicKey));
+#      const prv = b64(await crypto.subtle.exportKey('pkcs8', kp.privateKey));
+#      console.log('PUBLICA (va al roster):', pub);
+#      console.log('PRIVADA (GUARDALA tu, NO la compartas, NO al server):', prv);
+#    })();
+#
+#    -> Cada firmante te PASA su PUBLICA (la pegas en una fila de abajo).
+#    -> La PRIVADA la guarda EL FIRMANTE (gestor de claves / archivo seguro). Si la
+#       pierde, se revoca su clave y genera una nueva. Nunca sube al server ni al repo.
+# ============================================================================
+
+usuario,clave_publica,activa,fecha_inicio,fecha_fin
+# iadriazola,MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAp8tnTCbKp3/9qRsy9f3S
+CIJphuqbN1/55defDmefMfNsoSodDB76CkTo0Z1ZudkyzDE7h7hlZw9GEqJo4bI6
+LQUeSESGxYGT8jmmxtUGWrXnwhK5CQAHHV1vV/4GxO9DSvWjFhIN6xH2ShO2KDPl
+rug9YJCQOhfTquSGDKqN/nhXPhQ0nMr/Dn/PjOqTCXFx+ltvyWPmMPBP0Kd1KHQb
+ODkvHAZrkgsm9czQkYkW4VBtaucWnfns2FfC20M+Rq8bMY+Us8MWaXI5FyIj0ZiS
+09J7ovArBIwjyD3fwnJMeWqVBi/EYjcf7qWGT0HlEXzfOzekoFsSzt0SxyU20yX1
+ErCt44TOV8IbvC2E4pOwyulsXZEPh7G6Qr0YtJkb5u5xKbpLQzIhXRE6fUV4ukmF
+S74a9VTEPZdASYjetQQ+y1ZWTuKT7fu0VbDClFitN28OKieE51HrTLk25T9fZQFw
+AaU5Z6+UmMeAoJEv7oagA6WUn27kWVBaSQr7oD8jlyx5AgMBAAE=,1,2026-10-09,
